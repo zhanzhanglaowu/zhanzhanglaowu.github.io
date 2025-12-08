@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0">
+		<title>拉不拉软件</title>
+		<meta name="description" content="本网站分享免费工具网站或者免费软件" />
+		<link rel="stylesheet" href="https://cdn.bootcss.com/bootstrap/3.3.7/css/bootstrap.min.css">
+		<style>
+			img {
+				max-width: 100%;
+			}
+
+			h2 {
+				text-align: center;
+				color: green;
+			}
+
+			p {
+				font-size: 18px;
+				margin: 10px;
+			}
+			.image-container {
+			    position: relative;
+			    display: inline-block;
+			}
+			
+			.text-overlay {
+			    color: white; /* 文字颜色 */
+			    font-size: 24px; /* 文字大小 */
+			    padding: 10px; /* 内边距 */
+			    border-radius: 5px; /* 边框圆角 */
+			}
+			textarea {
+			    width: 100%;  /* 宽度自适应父元素 */
+			    /* height: auto; 这样设置通常不会自动调整高度 */
+			}
+			#drag {
+				min-width: 100px;
+				height: 100px;
+				position: absolute;
+				cursor: move;
+				font-size:32px;
+				color:red;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<div class="row clearfix" style='min-height:800px;'>
+				<nav class="navbar navbar-default" role="navigation">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle" data-toggle="collapse"
+							data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle
+								navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span
+								class="icon-bar"></span></button>
+						<h1 style="color: green;font-size: 32px;margin: 0px;" class="navbar-brand"><a href="/">返回首页</a></h1>
+					</div>
+
+					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+						<ul class="nav navbar-nav">
+						</ul>
+						<ul class="nav navbar-nav navbar-right">
+						</ul>
+					</div>
+
+				</nav>
+
+				<div class="col-md-12 column">
+					
+					<div class="col-md-8 column image-container">
+						<h2>打开图片</h2>
+						<input type="file" id="imageInput" accept="image/*">
+						<br>
+						<div id="drag" style="display:none;text-align: center;"></div>
+						<img id="outputImage" src="" alt="图片将显示在这里" style="display:none;max-height: 500px;">
+						
+
+
+					</div>
+					<div class="col-md-4 column">
+						<h2>添加文字</h2>
+						<textarea id="txt" rows="10">字段1
+字段2
+字段3
+						</textarea>
+						<label>字体大小：</label><input id="size" type="text" value="50"/>
+						<br>
+						<label>字体颜色：</label><input id="yanse" type="text" value="#FF0000"/>
+						<br>
+						<br>
+						<div style="text-align:center"> 
+						<button class="btn btn-primary" onclick="add()">设置文字</button>
+						</div>
+						<hr>
+						<a style="color:green;font-size:24px;" target="_blank" href="yanse.html">查看颜色表</a>
+					</div>
+				</div>
+
+			</div>
+			<div class="jumbotron text-center">
+				<span style="color:green;">拉不拉软件</span>
+			</div>
+		</div>
+	</body>
+	<script>
+		document.getElementById('imageInput').addEventListener('change', function(event) {
+			const file = event.target.files[0];
+			if (file) {
+				const reader = new FileReader();
+				reader.onload = function(e) {
+					const img = document.getElementById('outputImage');
+					img.src = e.target.result;
+					img.style.display = 'block'; // 显示图片
+				};
+				reader.readAsDataURL(file); // 读取文件内容并转换为DataURL
+			}
+		});
+		function add(){
+			var txt=document.getElementById('txt').value;
+			txt=txt.replace(/\r/g,"<br>")
+			txt=txt.replace(/\n/g,"<br>")
+			var div = document.getElementById('drag');
+			// 设置div内容
+			div.innerHTML = txt;
+			//设置字体大小
+			var size=document.getElementById('size').value;
+			var yanse=document.getElementById('yanse').value;
+			//alert(size);
+			//alert(yanse);
+			div.style.fontSize = size+'px';
+			div.style.color = yanse;
+			div.style.display = 'block'; // 显示图片;
+		}
+		
+	</script>
+	<script>
+	// 获取元素
+	var elem = document.getElementById("drag");
+	
+	// 记录鼠标按下时的位置和元素的位置
+	var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+	
+	// 当按下鼠标按钮时，记录鼠标的位置和元素的位置
+	elem.onmousedown = function(e) {
+	    e = e || window.event;
+	    e.preventDefault(); // 阻止默认事件（例如文本选择）
+	    // 获取鼠标点击的位置
+	    pos3 = e.clientX;
+	    pos4 = e.clientY;
+	    document.onmouseup = closeDragElement; // 当鼠标释放时停止移动
+	    // 当鼠标移动时调用elementDrag函数
+	    document.onmousemove = elementDrag;
+	}
+	
+	function elementDrag(e) {
+	    e = e || window.event;
+	    e.preventDefault();
+	    // 计算新的光标位置:
+	    pos1 = pos3 - e.clientX;
+	    pos2 = pos4 - e.clientY;
+	    pos3 = e.clientX;
+	    pos4 = e.clientY;
+	    // 设置元素的新位置:
+	    elem.style.top = (elem.offsetTop - pos2) + "px";
+	    elem.style.left = (elem.offsetLeft - pos1) + "px";
+	}
+	
+	function closeDragElement() {
+	    // 停止移动当鼠标按钮被释放:
+	    document.onmouseup = null;
+	    document.onmousemove = null;
+	}
+	</script>
+
+</html>
