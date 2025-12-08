@@ -37,7 +37,7 @@
 			}
 			#drag {
 				min-width: 100px;
-				height: 100px;
+				min-height: 100px;
 				position: absolute;
 				cursor: move;
 				font-size:32px;
@@ -54,7 +54,9 @@
 							data-target="#bs-example-navbar-collapse-1"> <span class="sr-only">Toggle
 								navigation</span><span class="icon-bar"></span><span class="icon-bar"></span><span
 								class="icon-bar"></span></button>
-						<h1 style="color: green;font-size: 32px;margin: 0px;" class="navbar-brand"><a href="/">返回首页</a></h1>
+						<h1 style="color: green;font-size: 32px;margin: 0px;" class="navbar-brand">
+							<a href="/">返回首页</a>
+						</h1>
 					</div>
 
 					<div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
@@ -73,7 +75,7 @@
 						<input type="file" id="imageInput" accept="image/*">
 						<br>
 						<div id="drag" style="display:none;text-align: center;"></div>
-						<img id="outputImage" src="" alt="图片将显示在这里" style="display:none;max-height: 500px;">
+						<img id="outputImage" src="" alt="图片将显示在这里" style="display:none;max-height: 700px;">
 						
 
 
@@ -93,12 +95,16 @@
 						<button class="btn btn-primary" onclick="add()">设置文字</button>
 						</div>
 						<hr>
-						<a style="color:green;font-size:24px;" target="_blank" href="yanse.html">查看颜色表</a>
+						<ol style="font-size: 18px;">
+							<li>鼠标左键按住<font color=red>红色字体</font>，可拖动位置</li>
+							<li>可修改颜色，<a style="color:green;" target="_blank" href="yanse.html">查看颜色表</a></li>
+						</ol>
+						
 					</div>
 				</div>
 
 			</div>
-			<div class="jumbotron text-center">
+			<div class="jumbotron text-center" style="margin-top:20px;">
 				<span style="color:green;">拉不拉软件</span>
 			</div>
 		</div>
