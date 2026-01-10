@@ -339,23 +339,23 @@
                 <h3>选择背景图</h3>
                 <div class="material-list" id="bgMaterialList">
                     <!-- 背景素材（可自行扩展） -->
-                    <div class="material-item active" data-src="/body/a1.png">
+                    <div class="material-item active" data-src="body/a1.png">
                         <img src="body/a1.png" alt="表情1">
                     </div>
-                    <div class="material-item" data-src="/body/a2.png">
+                    <div class="material-item" data-src="body/a2.png">
                         <img src="body/a2.png" alt="表情2">
                     </div>
-                    <div class="material-item" data-src="/body/a3.png">
+                    <div class="material-item" data-src="body/a3.png">
                         <img src="body/a3.png" alt="表情3">
                     </div>
-                    <div class="material-item" data-src="/body/a4.png">
+                    <div class="material-item" data-src="body/a4.png">
                         <img src="body/a4.png" alt="表情4">
                     </div>
-                    <div class="material-item" data-src="/body/a5.png">
+                    <div class="material-item" data-src="body/a5.png">
                         <img src="body/a5.png" alt="表情5">
                     </div>
-					<div class="material-item" data-src="/body/a.png">
-					    <img src="body/a.png" alt="表情">
+					<div class="material-item" data-src="body/a.png">
+					    <img src="body/a.png" alt="表情6">
 					</div>
                 </div>
             </div>
@@ -365,19 +365,19 @@
                 <h3>选择表情图</h3>
                 <div class="material-list" id="emojiMaterialList">
                     <!-- 表情素材（可自行扩展） -->
-                    <div class="material-item active" data-src="/face/a1.png">
+                    <div class="material-item active" data-src="face/a1.png">
                         <img src="face/a1.png" alt="表情1">
                     </div>
-                    <div class="material-item" data-src="/face/a2.png">
+                    <div class="material-item" data-src="face/a2.png">
                         <img src="face/a2.png" alt="表情2">
                     </div>
-                    <div class="material-item" data-src="/face/a3.png">
+                    <div class="material-item" data-src="face/a3.png">
                         <img src="face/a3.png" alt="表情3">
                     </div>
-                    <div class="material-item" data-src="/face/a4.png">
+                    <div class="material-item" data-src="face/a4.png">
                         <img src="face/a4.png" alt="表情4">
                     </div>
-                    <div class="material-item" data-src="/face/a5.png">
+                    <div class="material-item" data-src="face/a5.png">
                         <img src="face/a5.png" alt="表情5">
                     </div>
                 </div>
@@ -754,7 +754,8 @@
                 ctx.translate(emojiState.containerW/2 + emojiState.x, emojiState.containerH/2 + emojiState.y);
                 // 应用旋转和缩放
 				ctx.rotate(emojiState.rotation * Math.PI / 180);
-                ctx.scale(emojiState.scale/1.7, emojiState.scale/1.7);
+				//这里本来除以1.7，结果脸小了。=================================这里要特别注意+++++++++++++++++++++
+                ctx.scale(emojiState.scale, emojiState.scale);
                 
                 const emojiImg = new Image();
                 emojiImg.crossOrigin = 'anonymous';
