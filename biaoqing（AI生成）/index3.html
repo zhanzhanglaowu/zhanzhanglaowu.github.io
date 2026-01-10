@@ -1,0 +1,857 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>表情包制作神器</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+        }
+
+        body {
+            background: #f5f7fa;
+            color: #333;
+            padding-bottom: 2rem;
+        }
+
+        /* 头部样式 */
+        .header {
+            background: #ff7875;
+            color: #fff;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+
+        /* 主容器 */
+        .container {
+            max-width: 1200px;
+            margin: 1.5rem auto;
+            padding: 0 1rem;
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 1.5rem;
+        }
+
+        @media (min-width: 768px) {
+            .container {
+                grid-template-columns: 280px 1fr;
+            }
+        }
+
+        /* 控制面板 */
+        .control-panel {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.2rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .panel-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #ff7875;
+            border-bottom: 1px solid #eee;
+            padding-bottom: 0.5rem;
+        }
+
+        /* 素材选择区 */
+        .material-group {
+            margin-bottom: 1.8rem;
+        }
+
+        .material-group h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            color: #555;
+        }
+
+        .material-list {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.5rem;
+            max-height: 300px;
+            overflow-y: auto;
+            padding-right: 0.3rem;
+        }
+
+        .material-item {
+            border: 2px solid transparent;
+            border-radius: 6px;
+            overflow: hidden;
+            cursor: pointer;
+            aspect-ratio: 1/1;
+        }
+
+        .material-item.active {
+            border-color: #ff7875;
+        }
+
+        .material-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 文字编辑区 */
+        .text-editor {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border: 1px solid #eee;
+            border-radius: 8px;
+        }
+
+        .text-editor h3 {
+            font-size: 0.95rem;
+            margin-bottom: 0.8rem;
+            color: #555;
+        }
+
+        .text-input {
+            width: 100%;
+            padding: 0.6rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            margin-bottom: 0.8rem;
+            font-size: 0.9rem;
+            resize: none;
+            height: 60px;
+        }
+
+        .text-toolbar {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .text-tool {
+            flex: 1;
+            min-width: 80px;
+        }
+
+        .text-tool label {
+            font-size: 0.8rem;
+            color: #666;
+            display: block;
+            margin-bottom: 0.3rem;
+        }
+
+        .text-tool input {
+            padding: 0.4rem;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            width: 100%;
+        }
+
+        .text-color {
+            padding: 0 !important;
+            height: 30px;
+        }
+
+        /* 操作按钮组 */
+        .control-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .btn-group {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            flex: 1;
+            min-width: 60px;
+            padding: 0.6rem 0;
+            background: #f8f8f8;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.2s;
+        }
+
+        .control-btn:hover {
+            background: #ff7875;
+            color: #fff;
+            border-color: #ff7875;
+        }
+
+        .angle-display {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 0.5rem;
+        }
+
+        /* 导出按钮 */
+        .export-btn {
+            width: 100%;
+            padding: 0.8rem;
+            background: #ff7875;
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .export-btn:hover {
+            background: #ff5252;
+            transform: translateY(-2px);
+        }
+
+        /* 画布区域 */
+        .editor-area {
+            background: #fff;
+            border-radius: 12px;
+            padding: 1rem;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .canvas-container {
+            width: 100%;
+            max-width: 600px;
+            aspect-ratio: 1/1;
+            border: 1px solid #eee;
+            border-radius: 8px;
+            overflow: hidden;
+            position: relative;
+            background: #fff;
+            touch-action: none;
+            margin: 0 auto;
+        }
+
+        .bg-image {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 1;
+            object-fit: cover;
+        }
+
+        .emoji-image {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2;
+            cursor: move;
+            touch-action: none;
+            max-width: 50%;
+            max-height: 50%;
+        }
+
+        .text-layer {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 3;
+            color: #000;
+            font-size: 24px;
+            text-align: center;
+            white-space: pre-wrap;
+            cursor: move;
+            touch-action: none;
+            padding: 0.5rem;
+            max-width: 90%;
+        }
+
+        .canvas-tip {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            color: #999;
+            font-size: 0.9rem;
+            text-align: center;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 1rem;
+            color: #ff7875;
+            margin-top: 1rem;
+        }
+
+        .loading.show {
+            display: block;
+        }
+
+        /* 滚动条美化 */
+        .material-list::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .material-list::-webkit-scrollbar-thumb {
+            background: #ff7875;
+            border-radius: 2px;
+        }
+
+        /* 响应式适配 */
+        @media (max-width: 767px) {
+            .material-list {
+                grid-template-columns: repeat(4, 1fr);
+            }
+            .control-btn {
+                min-width: 45px;
+                padding: 0.5rem 0;
+                font-size: 0.8rem;
+            }
+            .text-tool {
+                min-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <h1>表情包制作神器</h1>
+    </header>
+
+    <div class="container">
+        <!-- 控制面板 -->
+        <div class="control-panel">
+            <h2 class="panel-title">制作工具</h2>
+
+            <!-- 背景素材选择 -->
+            <div class="material-group">
+                <h3>选择背景图</h3>
+                <div class="material-list" id="bgMaterialList">
+                    <!-- 背景素材（可自行扩展） -->
+                    <div class="material-item active" data-src="/body/a1.png">
+                        <img src="/body/a1.png" alt="表情1">
+                    </div>
+                    <div class="material-item" data-src="https://picsum.photos/400/400?random=102">
+                        <img src="/body/a2.png" alt="表情2">
+                    </div>
+                    <div class="material-item" data-src="https://picsum.photos/400/400?random=103">
+                        <img src="/body/a3.png" alt="表情3">
+                    </div>
+                    <div class="material-item" data-src="https://picsum.photos/400/400?random=104">
+                        <img src="/body/a4.png" alt="表情4">
+                    </div>
+                    <div class="material-item" data-src="https://picsum.photos/400/400?random=105">
+                        <img src="/body/a5.png" alt="表情5">
+                    </div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=102">
+					    <img src="/body/a2.png" alt="表情2">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=103">
+					    <img src="/body/a3.png" alt="表情3">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=104">
+					    <img src="/body/a4.png" alt="表情4">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=105">
+					    <img src="/body/a5.png" alt="表情5">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=102">
+					    <img src="/body/a2.png" alt="表情2">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=103">
+					    <img src="/body/a3.png" alt="表情3">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=104">
+					    <img src="/body/a4.png" alt="表情4">
+					</div>
+					<div class="material-item" data-src="https://picsum.photos/400/400?random=105">
+					    <img src="/body/a5.png" alt="表情5">
+					</div>
+                </div>
+            </div>
+
+            <!-- 表情素材选择 -->
+            <div class="material-group">
+                <h3>选择表情图</h3>
+                <div class="material-list" id="emojiMaterialList">
+                    <!-- 表情素材（可自行扩展） -->
+                    <div class="material-item active" data-src="/face/a1.png">
+                        <img src="/face/a1.png" alt="表情1">
+                    </div>
+                    <div class="material-item" data-src="/face/a2.png">
+                        <img src="/face/a2.png" alt="表情2">
+                    </div>
+                    <div class="material-item" data-src="/face/a3.png">
+                        <img src="/face/a3.png" alt="表情3">
+                    </div>
+                    <div class="material-item" data-src="/face/a4.png">
+                        <img src="/body/a4.png" alt="表情4">
+                    </div>
+                    <div class="material-item" data-src="/face/a5.png">
+                        <img src="/face/a5.png" alt="表情5">
+                    </div>
+					<div class="material-item" data-src="/face/a2.png">
+					    <img src="/face/a2.png" alt="表情2">
+					</div>
+					<div class="material-item" data-src="/face/a3.png">
+					    <img src="/face/a3.png" alt="表情3">
+					</div>
+					<div class="material-item" data-src="/face/a4.png">
+					    <img src="/body/a4.png" alt="表情4">
+					</div>
+					<div class="material-item" data-src="/face/a5.png">
+					    <img src="/face/a5.png" alt="表情5">
+					</div>
+					<div class="material-item" data-src="/face/a2.png">
+					    <img src="/face/a2.png" alt="表情2">
+					</div>
+					<div class="material-item" data-src="/face/a3.png">
+					    <img src="/face/a3.png" alt="表情3">
+					</div>
+					<div class="material-item" data-src="/face/a4.png">
+					    <img src="/body/a4.png" alt="表情4">
+					</div>
+					<div class="material-item" data-src="/face/a5.png">
+					    <img src="/face/a5.png" alt="表情5">
+					</div>
+                </div>
+            </div>
+
+            <!-- 文字编辑区 -->
+            <div class="text-editor">
+                <h3>文字编辑</h3>
+                <textarea class="text-input" id="textInput" placeholder="输入文字（支持换行）"></textarea>
+                <div class="text-toolbar">
+                    <div class="text-tool">
+                        <label>文字大小</label>
+                        <input type="number" id="textSize" value="24" min="12" max="72" step="2">
+                    </div>
+                    <div class="text-tool">
+                        <label>文字颜色</label>
+                        <input type="color" id="textColor" value="#000000" class="text-color">
+                    </div>
+                </div>
+                <button class="control-btn" id="updateText" style="width:100%;margin-top:0.8rem;">更新文字</button>
+            </div>
+
+            <!-- 旋转控制 -->
+            <div class="control-group">
+                <h3>旋转表情（15°/次）</h3>
+                <div class="btn-group">
+                    <button class="control-btn" id="rotateLeft">左旋转</button>
+                    <button class="control-btn" id="rotateRight">右旋转</button>
+                </div>
+                <div class="angle-display" id="angleDisplay">当前旋转角度：0°</div>
+            </div>
+
+            <!-- 缩放控制 -->
+            <div class="control-group">
+                <h3>缩放表情</h3>
+                <div class="btn-group">
+                    <button class="control-btn" id="zoomIn">放大</button>
+                    <button class="control-btn" id="zoomOut">缩小</button>
+                    <button class="control-btn" id="resetAll">重置</button>
+                </div>
+            </div>
+
+            <!-- 导出按钮 -->
+            <button class="export-btn" id="exportBtn">导出表情包</button>
+        </div>
+
+        <!-- 编辑画布 -->
+        <div class="editor-area">
+            <div class="canvas-container" id="canvasContainer">
+                <div class="canvas-tip" id="canvasTip">选择背景和表情开始制作</div>
+                <img class="bg-image" id="bgImage" src="" alt="背景图">
+                <img class="emoji-image" id="emojiImage" src="" alt="表情图">
+                <div class="text-layer" id="textLayer"></div>
+            </div>
+            <div class="loading" id="loading">正在导出图片...</div>
+        </div>
+    </div>
+
+    <script>
+        // DOM元素获取
+        const bgMaterialList = document.getElementById('bgMaterialList');
+        const emojiMaterialList = document.getElementById('emojiMaterialList');
+        const bgImage = document.getElementById('bgImage');
+        const emojiImage = document.getElementById('emojiImage');
+        const canvasContainer = document.getElementById('canvasContainer');
+        const canvasTip = document.getElementById('canvasTip');
+        const rotateLeft = document.getElementById('rotateLeft');
+        const rotateRight = document.getElementById('rotateRight');
+        const zoomIn = document.getElementById('zoomIn');
+        const zoomOut = document.getElementById('zoomOut');
+        const resetAll = document.getElementById('resetAll');
+        const exportBtn = document.getElementById('exportBtn');
+        const angleDisplay = document.getElementById('angleDisplay');
+        const loading = document.getElementById('loading');
+        
+        // 文字编辑元素
+        const textInput = document.getElementById('textInput');
+        const textSize = document.getElementById('textSize');
+        const textColor = document.getElementById('textColor');
+        const updateText = document.getElementById('updateText');
+        const textLayer = document.getElementById('textLayer');
+
+        // 表情状态管理
+        let emojiState = {
+            rotation: 0,    // 旋转角度（15°步进）
+            scale: 1,       // 缩放比例
+            x: 0,           // X偏移
+            y: 0,           // Y偏移
+            isDragging: false,
+            startX: 0,
+            startY: 0,
+            containerW: 0,
+            containerH: 0
+        };
+
+        // 文字状态管理
+        let textState = {
+            content: '',
+            size: 24,
+            color: '#000',
+            x: 0,
+            y: 20,
+            isDragging: false,
+            startX: 0,
+            startY: 0
+        };
+
+        // 初始化容器尺寸
+        function initContainerSize() {
+            emojiState.containerW = canvasContainer.offsetWidth;
+            emojiState.containerH = canvasContainer.offsetHeight;
+        }
+
+        // 初始化素材
+        function initMaterials() {
+            // 初始化背景图
+            const defaultBg = bgMaterialList.querySelector('.material-item.active');
+            if (defaultBg) {
+                bgImage.src = defaultBg.dataset.src;
+                bgImage.style.display = 'block';
+            }
+
+            // 初始化表情图
+            const defaultEmoji = emojiMaterialList.querySelector('.material-item.active');
+            if (defaultEmoji) {
+                emojiImage.src = defaultEmoji.dataset.src;
+                emojiImage.style.display = 'block';
+                canvasTip.style.display = 'none';
+                resetEmojiState();
+                updateEmojiTransform();
+            }
+        }
+
+        // 重置表情状态
+        function resetEmojiState() {
+            emojiState.rotation = 0;
+            emojiState.scale = 1;
+            emojiState.x = 0;
+            emojiState.y = 0;
+            angleDisplay.textContent = `当前旋转角度：${emojiState.rotation}°`;
+        }
+
+        // 更新表情变换
+        function updateEmojiTransform() {
+            emojiImage.style.transform = `translate(-50%, -50%) translate(${emojiState.x}px, ${emojiState.y}px) rotate(${emojiState.rotation}deg) scale(${emojiState.scale})`;
+        }
+
+        // 更新文字层
+        function updateTextLayer() {
+            textLayer.textContent = textState.content;
+            textLayer.style.fontSize = `${textState.size}px`;
+            textLayer.style.color = textState.color;
+            textLayer.style.transform = `translateX(-50%) translate(${textState.x}px, ${textState.y}px)`;
+            textLayer.style.display = textState.content.trim() ? 'block' : 'none';
+        }
+
+        // 背景素材选择事件
+        bgMaterialList.addEventListener('click', (e) => {
+            const item = e.target.closest('.material-item');
+            if (!item) return;
+            
+            bgMaterialList.querySelectorAll('.material-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            bgImage.src = item.dataset.src;
+            bgImage.style.display = 'block';
+            canvasTip.style.display = 'none';
+        });
+
+        // 表情素材选择事件
+        emojiMaterialList.addEventListener('click', (e) => {
+            const item = e.target.closest('.material-item');
+            if (!item) return;
+            
+            emojiMaterialList.querySelectorAll('.material-item').forEach(i => i.classList.remove('active'));
+            item.classList.add('active');
+            emojiImage.src = item.dataset.src;
+            emojiImage.style.display = 'block';
+            canvasTip.style.display = 'none';
+            resetEmojiState();
+            updateEmojiTransform();
+        });
+
+        // 旋转控制事件
+        rotateLeft.addEventListener('click', () => {
+            if (!emojiImage.src) return;
+            emojiState.rotation = (emojiState.rotation - 15) % 360;
+            angleDisplay.textContent = `当前旋转角度：${emojiState.rotation}°`;
+            updateEmojiTransform();
+        });
+
+        rotateRight.addEventListener('click', () => {
+            if (!emojiImage.src) return;
+            emojiState.rotation = (emojiState.rotation + 15) % 360;
+            angleDisplay.textContent = `当前旋转角度：${emojiState.rotation}°`;
+            updateEmojiTransform();
+        });
+
+        // 缩放控制事件
+        zoomIn.addEventListener('click', () => {
+            if (!emojiImage.src) return;
+            emojiState.scale = Math.min(emojiState.scale + 0.1, 3);
+            updateEmojiTransform();
+        });
+
+        zoomOut.addEventListener('click', () => {
+            if (!emojiImage.src) return;
+            emojiState.scale = Math.max(emojiState.scale - 0.1, 0.1);
+            updateEmojiTransform();
+        });
+
+        // 重置所有状态
+        resetAll.addEventListener('click', () => {
+            resetEmojiState();
+            updateEmojiTransform();
+            
+            // 重置文字
+            textState = { content: '', size: 24, color: '#000', x: 0, y: 20, isDragging: false, startX: 0, startY: 0 };
+            textInput.value = '';
+            textSize.value = 24;
+            textColor.value = '#000';
+            updateTextLayer();
+        });
+
+        // 文字更新事件
+        updateText.addEventListener('click', () => {
+            textState.content = textInput.value;
+            textState.size = parseInt(textSize.value) || 24;
+            textState.color = textColor.value;
+            updateTextLayer();
+        });
+
+        // 表情拖拽事件
+        emojiImage.addEventListener('mousedown', startEmojiDrag);
+        emojiImage.addEventListener('touchstart', startEmojiDrag, { passive: false });
+
+        canvasContainer.addEventListener('mousemove', dragEmoji);
+        canvasContainer.addEventListener('touchmove', dragEmoji, { passive: false });
+
+        canvasContainer.addEventListener('mouseup', endEmojiDrag);
+        canvasContainer.addEventListener('mouseleave', endEmojiDrag);
+        canvasContainer.addEventListener('touchend', endEmojiDrag);
+
+        function startEmojiDrag(e) {
+            if (!emojiImage.src) return;
+            e.preventDefault();
+            emojiState.isDragging = true;
+            
+            const rect = canvasContainer.getBoundingClientRect();
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            
+            emojiState.startX = clientX - rect.left - emojiState.x;
+            emojiState.startY = clientY - rect.top - emojiState.y;
+        }
+
+        function dragEmoji(e) {
+            if (!emojiState.isDragging || !emojiImage.src) return;
+            e.preventDefault();
+            
+            const rect = canvasContainer.getBoundingClientRect();
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            
+            emojiState.x = clientX - rect.left - emojiState.startX;
+            emojiState.y = clientY - rect.top - emojiState.startY;
+            
+            updateEmojiTransform();
+        }
+
+        function endEmojiDrag() {
+            emojiState.isDragging = false;
+        }
+
+        // 文字拖拽事件
+        textLayer.addEventListener('mousedown', startTextDrag);
+        textLayer.addEventListener('touchstart', startTextDrag, { passive: false });
+
+        canvasContainer.addEventListener('mousemove', dragText);
+        canvasContainer.addEventListener('touchmove', dragText, { passive: false });
+
+        canvasContainer.addEventListener('mouseup', endTextDrag);
+        canvasContainer.addEventListener('mouseleave', endTextDrag);
+        canvasContainer.addEventListener('touchend', endTextDrag);
+
+        function startTextDrag(e) {
+            if (!textState.content.trim()) return;
+            e.preventDefault();
+            textState.isDragging = true;
+            
+            const rect = canvasContainer.getBoundingClientRect();
+            const clientX = e.type === 'touchstart' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchstart' ? e.touches[0].clientY : e.clientY;
+            
+            textState.startX = clientX - rect.left - textState.x;
+            textState.startY = clientY - rect.top - textState.y;
+        }
+
+        function dragText(e) {
+            if (!textState.isDragging || !textState.content.trim()) return;
+            e.preventDefault();
+            
+            const rect = canvasContainer.getBoundingClientRect();
+            const clientX = e.type === 'touchmove' ? e.touches[0].clientX : e.clientX;
+            const clientY = e.type === 'touchmove' ? e.touches[0].clientY : e.clientY;
+            
+            textState.x = clientX - rect.left - textState.startX;
+            textState.y = clientY - rect.top - textState.startY;
+            
+            updateTextLayer();
+        }
+
+        function endTextDrag() {
+            textState.isDragging = false;
+        }
+
+        // 双指缩放表情
+        let lastDistance = 0;
+        canvasContainer.addEventListener('touchstart', (e) => {
+            if (e.touches.length === 2 && emojiImage.src) {
+                lastDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+            }
+        }, { passive: false });
+
+        canvasContainer.addEventListener('touchmove', (e) => {
+            if (e.touches.length === 2 && emojiImage.src) {
+                e.preventDefault();
+                const newDistance = Math.hypot(
+                    e.touches[0].clientX - e.touches[1].clientX,
+                    e.touches[0].clientY - e.touches[1].clientY
+                );
+                
+                const scaleRatio = newDistance / lastDistance;
+                emojiState.scale = Math.max(Math.min(emojiState.scale * scaleRatio, 3), 0.1);
+                
+                lastDistance = newDistance;
+                updateEmojiTransform();
+            }
+        }, { passive: false });
+
+        // 导出表情包
+        exportBtn.addEventListener('click', async () => {
+            if (!bgImage.src || !emojiImage.src) {
+                alert('请先选择背景图和表情图！');
+                return;
+            }
+
+            loading.classList.add('show');
+            
+            try {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                const scale = window.devicePixelRatio || 1;
+                // 高清画布设置
+                canvas.width = emojiState.containerW * scale;
+                canvas.height = emojiState.containerH * scale;
+                ctx.scale(scale, scale);
+
+                // 绘制背景
+                const bgImg = new Image();
+                bgImg.crossOrigin = 'anonymous';
+                await new Promise((resolve) => {
+                    bgImg.onload = resolve;
+                    bgImg.src = bgImage.src;
+                });
+                ctx.drawImage(bgImg, 0, 0, emojiState.containerW, emojiState.containerH);
+
+                // 绘制表情
+				// 保存当前画布状态
+                ctx.save();
+				// 移动画布原点到中心
+                ctx.translate(emojiState.containerW/2 + emojiState.x, emojiState.containerH/2 + emojiState.y);
+                // 应用旋转和缩放
+				ctx.rotate(emojiState.rotation * Math.PI / 180);
+                ctx.scale(emojiState.scale/1.7, emojiState.scale/1.7);
+                
+                const emojiImg = new Image();
+                emojiImg.crossOrigin = 'anonymous';
+                await new Promise((resolve) => {
+                    emojiImg.onload = resolve;
+                    emojiImg.src = emojiImage.src;
+                });
+                ctx.drawImage(emojiImg, -emojiImg.width/2, -emojiImg.height/2);
+                ctx.restore();
+
+                // 绘制文字
+                if (textState.content.trim()) {
+                    ctx.save();
+                    ctx.fillStyle = textState.color;
+                    ctx.font = `${textState.size}px "PingFang SC", "Microsoft YaHei", sans-serif`;
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'top';
+                    
+                    // 处理换行文字
+                    const lines = textState.content.split('\n');
+                    let yOffset = 0;
+                    lines.forEach(line => {
+                        ctx.fillText(line, emojiState.containerW/2 + textState.x, textState.y + yOffset);
+                        yOffset += textState.size + 5;
+                    });
+                    ctx.restore();
+                }
+
+                // 下载图片
+                const link = document.createElement('a');
+                link.download = `表情包_${Date.now()}.png`;
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+
+                loading.classList.remove('show');
+                alert('导出成功！');
+            } catch (error) {
+                loading.classList.remove('show');
+                alert('导出失败：' + error.message);
+                console.error(error);
+            }
+        });
+
+        // 初始化
+        window.addEventListener('load', () => {
+            initContainerSize();
+            initMaterials();
+            updateTextLayer();
+        });
+
+        // 窗口大小变化时更新容器尺寸
+        window.addEventListener('resize', initContainerSize);
+    </script>
+</body>
+</html>
